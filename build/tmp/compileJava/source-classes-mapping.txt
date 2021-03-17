@@ -6,7 +6,7 @@ PDFDocumentReader.java
  PDFDocumentReader
 WordCounter.java
  WordCounter
-CommandLineMain.java
- CommandLineMain
 Controller.java
  Controller
+CommandLineMain.java
+ CommandLineMain

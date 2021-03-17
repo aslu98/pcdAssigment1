@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 
 public class Controller {
 
-    private final int nThreads =Runtime.getRuntime().availableProcessors() + 3;
+    private final int ADDITIONAL_THREADS = 3;
+    private final int nThreads;
     private final List<PDFDocumentReader> pdfReaders = new LinkedList<>();
     private final int numberOfOutputWords;
     private final GlobalMap globalMap = new GlobalMap();
@@ -20,16 +21,18 @@ public class Controller {
         for (int i = 0; i <pdfFiles.length; i++){
             this.pdfReaders.add(new PDFDocumentReader(pdfFiles[i], wordsToIgnore));
         }
-        //nThreads = pdfReaders.size()-1;
+        this.nThreads = Math.min(Runtime.getRuntime().availableProcessors() + ADDITIONAL_THREADS, pdfReaders.size());
     }
 
     private void startThreads(){
-        int readersEachThread = pdfReaders.size()/nThreads;
+        int readersEachThread, start, stop = -1;
         System.out.println("total readers " + pdfReaders.size());
         for (int i = 0; i < nThreads; i++) {
-            System.out.println("from reader " + readersEachThread*i);
-            System.out.println("to reader " + ((i == nThreads-1) ? pdfReaders.size()-1 : readersEachThread*(i+1)-1));
-            new WordCounter(globalMap, pdfReaders.subList(readersEachThread*i, (i == nThreads-1) ? pdfReaders.size()-1 : readersEachThread*(i+1)-1), i, this).start();
+            readersEachThread = pdfReaders.size()/nThreads +  (i <= pdfReaders.size()%nThreads ? 1 : 0);
+            start = stop + 1;
+            stop = start + readersEachThread - 1;
+            System.out.println("[Thread  " + i +"] from reader " + start + " to reader " + stop);
+            new WordCounter(globalMap, pdfReaders.subList(start, stop), i, this).start();
         }
     }
 
@@ -53,6 +56,22 @@ public class Controller {
         if (threadsDone == nThreads){
             this.printMostFrequentWords(globalMap.getMap());
         }
+    }
+
+    public void sequentialMostFrequentWords(){
+        pdfReaders.forEach(pdf -> {
+            try {
+                List<String> pdfWords = pdf.getUsefulWords();
+                pdf.closeDoc();
+                for (String w: pdfWords){
+                    globalMap.updateWordCount(w);
+                }
+                totWords += pdfWords.size();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        printMostFrequentWords(globalMap.getMap());
     }
 
 }

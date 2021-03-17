@@ -15,6 +15,7 @@ public class CommandLineMain {
         try {
             Controller controller = new Controller(f, d, n);
             controller.mostFrequentWords();
+            //controller.sequentialMostFrequentWords();
         } catch (IOException e){
             e.printStackTrace();
         }
