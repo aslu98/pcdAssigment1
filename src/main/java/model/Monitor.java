@@ -24,4 +24,8 @@ public class Monitor {
 		canGet = false;
 		return value;
 	}
+
+	public int justGet(){
+		return this.value;
+	}
 }

@@ -15,7 +15,9 @@ public class GlobalMap {
 
 	public void computeWord(final String w){
 		if (wordCount.containsKey(w)){
-			wordCount.put(w, newCount(w));
+			synchronized (w){
+				wordCount.put(w, newCount(w));
+			}
 		} else {
 			addWord(w);
 		}
@@ -42,7 +44,7 @@ public class GlobalMap {
 		return wordCount.entrySet()
 				.stream()
 				.collect(Collectors.toMap(Map.Entry::getKey,
-						e -> e.getValue().get()));
+						e -> e.getValue().justGet()));
 	}
 }
 

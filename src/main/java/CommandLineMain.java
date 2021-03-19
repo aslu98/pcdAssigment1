@@ -7,7 +7,7 @@ public class CommandLineMain {
     {
         String absolutePath = "/Users/asialucchi/Documents/Magistrale/II sem/Concorrente/Assignment1/src/main/resources/";
         String defaultDirectoryPath = "pdfDocuments";
-        String defaultIgnoreFilePath = "ignored/ignored.txt";
+        String defaultIgnoreFilePath = "ignored/empty.txt";
         int defaultN = 3;
 
         String d = absolutePath + (args.length >= 1 ? args[0] : defaultDirectoryPath);

@@ -67,19 +67,24 @@ public class ThreadsController {
     }
 
     public void sequentialMostFrequentWords(){
-        HashMap<String, Integer> map = new HashMap<>();
+        HashMap<String, Integer> seqMap = new HashMap<>();
         List<PDFDocumentReader> pdfReaders = new LinkedList<>();
         for (int i = 0; i <pdfFiles.size(); i++){
             pdfReaders.add(new PDFDocumentReader(pdfFiles.get(i), wordsToIgnore));
         }
         pdfReaders.forEach(pdf -> {
-            List<String> pdfWords = pdf.getUsefulWords();
-            for (String w: pdfWords){
-                map.put(w, (map.containsKey(w)? 1: map.get(w) +1));
+            Optional<List<String>> pdfWordsOpt = pdf.extractAllWords();
+            if (pdfWordsOpt.isPresent()) {
+                List<String> pdfWords = pdfWordsOpt.get();
+                for (String w : pdfWords) {
+                    seqMap.put(w, (seqMap.containsKey(w) ? 1 : (seqMap.get(w) + 1)));
+                }
+                totWords += pdfWords.size();
+            } else {
+                System.out.println(pdf.getTitle() + "is not present");
             }
-            totWords += pdfWords.size();
         });
-        printMostFrequentWords(map);
+        printMostFrequentWords(seqMap);
     }
 
 }

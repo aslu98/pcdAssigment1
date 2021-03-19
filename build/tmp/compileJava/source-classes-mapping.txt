@@ -1,17 +1,17 @@
 view/GUI.java
  view.GUI
  view.GUI$1
-model/PDFDocumentReader.java
- model.PDFDocumentReader
+model/Monitor.java
+ model.Monitor
+CommandLineMain.java
+ CommandLineMain
 GUIMain.java
  GUIMain
 model/GlobalMap.java
  model.GlobalMap
-model/Monitor.java
- model.Monitor
 controller/ThreadsController.java
  controller.ThreadsController
 model/WordCounter.java
  model.WordCounter
-CommandLineMain.java
- CommandLineMain
+model/PDFDocumentReader.java
+ model.PDFDocumentReader

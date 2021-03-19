@@ -9,13 +9,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.min;
 
 public class PDFDocumentReader {
 
+    private final int NUMBER_OF_PAGES_EACH_READ = 10;
     private PDDocument toRead;
+    private String title;
     private final List<String> wordsToIgnore;
-    private List<String> words;
+    private int actualPage = 1;
 
     public PDFDocumentReader(final File toReadFile, final List<String> wordsToIgnore) {
         try {
@@ -33,32 +38,49 @@ public class PDFDocumentReader {
             if (!ap.canExtractContent()) {
                 throw new IOException("You do not have permission to extract text");
             }
-            System.out.println("Loading " + file.getName());
-            this.extractWords();
+            this.title = file.getName();
+            System.out.println("Loaded " + title);
         } catch (IOException e){
             e.printStackTrace();
-        } finally {
-            if (this.toRead != null) {
-                this.toRead.close();
-            }
         }
     }
 
-    private void extractWords() {
+    public String getTitle(){
+        return this.title;
+    }
+
+    public Optional<List<String>> extractWords() {
         try {
             PDFTextStripper stripper = new PDFTextStripper();
-            String text = (stripper.getText(toRead)).toLowerCase();
-            this.words = new ArrayList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
-        }
-        catch (IOException e) {
+            if (actualPage <= toRead.getNumberOfPages()) {
+                stripper.setStartPage(actualPage);
+                actualPage = min(toRead.getNumberOfPages(), actualPage + NUMBER_OF_PAGES_EACH_READ);
+                stripper.setEndPage(actualPage);
+                actualPage += 1;
+                return getWords(stripper);
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        return Optional.empty();
     }
 
-    public List<String> getUsefulWords(){
-        for(String toIgnore: wordsToIgnore){
-            this.words.removeIf(word -> word.equals(toIgnore));
+    public Optional<List<String>> extractAllWords() {
+        try {
+            PDFTextStripper stripper = new PDFTextStripper();
+            return getWords(stripper);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return words;
+        return Optional.empty();
+    }
+
+    private Optional<List<String>> getWords(PDFTextStripper stripper) throws IOException {
+        String text = (stripper.getText(toRead)).toLowerCase();
+        List<String> words = new ArrayList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
+        for (String toIgnore : wordsToIgnore) {
+            words.removeIf(word -> word.equals(toIgnore));
+        }
+        return Optional.of(words);
     }
 }
