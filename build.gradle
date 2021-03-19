@@ -26,6 +26,9 @@ dependencies {
 
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.1'
 
+    compile "org.bouncycastle:bcprov-jdk15:1.44"
+    compile "org.bouncycastle:bcmail-jdk15:1.44"
+
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 }
