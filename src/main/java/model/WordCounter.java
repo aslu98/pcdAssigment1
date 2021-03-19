@@ -9,40 +9,26 @@ import java.util.Optional;
 public class WordCounter extends Thread {
 
 	private final int UPDATE_EACH = 10000;
-	private final List<File> pdfFiles;
-	private final List<String> wordsToIgnore;
 	private final GlobalMap map;
 	private final ThreadsController controller;
+	private final WordsExtractor wordsExtractor;
 	private int totWords = 0;
 	private int count = 0;
 
-	public WordCounter(final List<File> files, final List<String> wordsToIgnore, final int index, final ThreadsController controller){
+	public WordCounter(final WordsExtractor wordsExtractor, final int index, final ThreadsController controller){
 		super("wordCounter " + index);
 		this.map = new GlobalMap();
-		this.pdfFiles = files;
-		this.wordsToIgnore = wordsToIgnore;
+		this.wordsExtractor = wordsExtractor;
 		this.controller = controller;
 	}
 
 	public void run(){
-		PDFDocumentReader pdf = null;
-		log("before counting. number of files:" + pdfFiles.size());
-		for (File pdfFile : pdfFiles) {
-			log("new document to load");
-			pdf = new PDFDocumentReader(pdfFile, wordsToIgnore);
-			log("document loaded");
-			this.processDocument(pdf);
-		};
-		log("after counting");
-		controller.threadCompleted(totWords, map);
-	}
-
-	private void processDocument(PDFDocumentReader pdfDoc){
-		Optional<List<String>> pdfWords = pdfDoc.extractWords();
-		int section = 1;
-		while (pdfWords.isPresent()){
-			log("processing reader " + pdfDoc.getTitle() + " in section " + section + " with total words: " + pdfWords.get().size());
-			for (String w : pdfWords.get()) {
+		log("before counting");
+		Optional<List<String>> pdfWordsOpt = wordsExtractor.getWords();
+		while (pdfWordsOpt.isPresent()){
+			List<String> pdfWords = pdfWordsOpt.get();
+			log("new words: " + pdfWords.size());
+			for (String w : pdfWords) {
 				map.computeWord(w);
 				count++;
 				if (count % UPDATE_EACH == 0) {
@@ -50,10 +36,11 @@ public class WordCounter extends Thread {
 					controller.update(map);
 				}
 			}
-			totWords += pdfWords.get().size();
-			section += 1;
-			pdfWords = pdfDoc.extractWords();
+			totWords += pdfWords.size();
+			pdfWordsOpt = wordsExtractor.getWords();
 		}
+		log("after counting");
+		controller.threadCompleted(totWords, map);
 	}
 
 	private void log(String st){

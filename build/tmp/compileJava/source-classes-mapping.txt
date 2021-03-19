@@ -3,15 +3,17 @@ view/GUI.java
  view.GUI$1
 model/Monitor.java
  model.Monitor
-CommandLineMain.java
- CommandLineMain
+model/PDFDocumentReader.java
+ model.PDFDocumentReader
 GUIMain.java
  GUIMain
 model/GlobalMap.java
  model.GlobalMap
+CommandLineMain.java
+ CommandLineMain
+model/WordsExtractor.java
+ model.WordsExtractor
 controller/ThreadsController.java
  controller.ThreadsController
 model/WordCounter.java
  model.WordCounter
-model/PDFDocumentReader.java
- model.PDFDocumentReader

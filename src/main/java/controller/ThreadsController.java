@@ -3,6 +3,7 @@ package controller;
 import model.GlobalMap;
 import model.PDFDocumentReader;
 import model.WordCounter;
+import model.WordsExtractor;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,28 +15,24 @@ public class ThreadsController {
 
     private final int ADDITIONAL_THREADS = 1;
     private final int nThreads;
-    private final List<File> pdfFiles;
     private final List<String> wordsToIgnore;
     private final int numberOfOutputWords;
+    private final WordsExtractor wordsExtractor;
     private int totWords = 0;
     private int threadsDone = 0;
 
     public ThreadsController(final String toIgnorePath, final String directoryPath, final int wordsNumber) throws IOException {
         this.numberOfOutputWords = wordsNumber;
-        this. pdfFiles = Arrays.stream(new File(directoryPath).listFiles((dir, name) -> name.endsWith(".pdf"))).collect(Collectors.toList());
-        this. wordsToIgnore = Files.readAllLines(new File(toIgnorePath).toPath());
-        this.nThreads = Math.min(Runtime.getRuntime().availableProcessors() + ADDITIONAL_THREADS, pdfFiles.size());
+        this.wordsToIgnore = Files.readAllLines(new File(toIgnorePath).toPath());
+        File[] pdfFiles = new File(directoryPath).listFiles((dir, name) -> name.endsWith(".pdf"));
+        this.wordsExtractor = new WordsExtractor(Arrays.stream(pdfFiles).map(f -> new PDFDocumentReader(f, this.wordsToIgnore)).collect(Collectors.toList()));
+        this.nThreads = Math.min(Runtime.getRuntime().availableProcessors() + ADDITIONAL_THREADS, pdfFiles.length);
     }
 
     private void startThreads(){
-        int readersEachThread, start, stop = 0;
-        System.out.println("total readers " + pdfFiles.size());
+        System.out.println("total readers " + wordsExtractor.size());
         for (int i = 0; i < nThreads; i++) {
-            readersEachThread = pdfFiles.size()/nThreads +  (i < pdfFiles.size() % nThreads ? 1 : 0);
-            start = stop;
-            stop = start + readersEachThread;
-            System.out.println("[wordCounter  " + i +"] from reader " + start + " to reader " + stop);
-            new WordCounter(pdfFiles.subList(start, Math.min(stop, pdfFiles.size())), wordsToIgnore, i, this).start();
+            new WordCounter(this.wordsExtractor, i, this).start();
         }
     }
 
@@ -64,27 +61,6 @@ public class ThreadsController {
 
     public void update(GlobalMap map){
         this.printMostFrequentWords(map.getMap());
-    }
-
-    public void sequentialMostFrequentWords(){
-        HashMap<String, Integer> seqMap = new HashMap<>();
-        List<PDFDocumentReader> pdfReaders = new LinkedList<>();
-        for (int i = 0; i <pdfFiles.size(); i++){
-            pdfReaders.add(new PDFDocumentReader(pdfFiles.get(i), wordsToIgnore));
-        }
-        pdfReaders.forEach(pdf -> {
-            Optional<List<String>> pdfWordsOpt = pdf.extractAllWords();
-            if (pdfWordsOpt.isPresent()) {
-                List<String> pdfWords = pdfWordsOpt.get();
-                for (String w : pdfWords) {
-                    seqMap.put(w, (seqMap.containsKey(w) ? 1 : (seqMap.get(w) + 1)));
-                }
-                totWords += pdfWords.size();
-            } else {
-                System.out.println(pdf.getTitle() + "is not present");
-            }
-        });
-        printMostFrequentWords(seqMap);
     }
 
 }
