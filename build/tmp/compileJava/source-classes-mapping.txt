@@ -1,19 +1,23 @@
-view/GUI.java
- view.GUI
- view.GUI$1
-model/Monitor.java
- model.Monitor
-model/GlobalMap.java
- model.GlobalMap
-GUIMain.java
- GUIMain
-model/WordCounter.java
- model.WordCounter
-CommandLineMain.java
- CommandLineMain
 controller/ThreadsController.java
  controller.ThreadsController
+model/WordCounter.java
+ model.WordCounter
+view/View.java
+ view.View
 model/PDFDocumentReader.java
  model.PDFDocumentReader
+GUIMain.java
+ GUIMain
+model/GlobalMap.java
+ model.GlobalMap
 model/SyncWordsExtractor.java
  model.SyncWordsExtractor
+CommandLineMain.java
+ CommandLineMain
+model/MapLock.java
+ model.MapLock
+view/CommandLineView.java
+ view.CommandLineView
+view/GUI/GUI.java
+ view.GUI.GUI
+ view.GUI.GUI$1

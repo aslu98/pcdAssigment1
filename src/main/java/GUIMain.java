@@ -1,4 +1,4 @@
-import view.GUI;
+import view.GUI.GUI;
 
 public class GUIMain {
     public static void main(String[] args) {

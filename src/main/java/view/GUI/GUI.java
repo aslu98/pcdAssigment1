@@ -1,11 +1,14 @@
-package view;
+package view.GUI;
+
+import view.View;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
-public class GUI {
+public class GUI implements View {
 
     private int count = 0;
     private JLabel label;
@@ -39,5 +42,10 @@ public class GUI {
         frame.add(panel, BorderLayout.CENTER);
         frame.pack();
         frame.setVisible(true);
+    }
+
+    @Override
+    public void update(final Map<String, Integer> sortedWordCount) {
+
     }
 }

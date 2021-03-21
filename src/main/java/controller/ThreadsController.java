@@ -4,6 +4,7 @@ import model.GlobalMap;
 import model.PDFDocumentReader;
 import model.WordCounter;
 import model.SyncWordsExtractor;
+import view.View;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,15 +15,17 @@ import java.util.stream.Collectors;
 public class ThreadsController {
 
     private final int NUMBER_OF_PAGES_EACH_SECTION = 20;
-    private final int ADDITIONAL_THREADS = 3;
+    private final int ADDITIONAL_THREADS = 2;
     private final int nThreads;
     private final List<String> wordsToIgnore;
     private final int numberOfOutputWords;
     private final SyncWordsExtractor wordsExtractor;
+    private final View view;
     private int totWords = 0;
     private int threadsDone = 0;
 
-    public ThreadsController(final String toIgnorePath, final String directoryPath, final int wordsNumber) throws IOException {
+    public ThreadsController(final String toIgnorePath, final String directoryPath, final int wordsNumber, final View view) throws IOException {
+        this.view = view;
         this.numberOfOutputWords = wordsNumber;
         this.wordsToIgnore = Files.readAllLines(new File(toIgnorePath).toPath());
         File[] pdfFiles = new File(directoryPath).listFiles((dir, name) -> name.endsWith(".pdf"));
@@ -37,13 +40,12 @@ public class ThreadsController {
         }
     }
 
-    private void printMostFrequentWords(final Map<String, Integer> wordCount) {
-        Map<String, Integer> sortedWordCount = wordCount.entrySet().stream()
-                                                        .sorted(Map.Entry.<String,Integer>comparingByValue().reversed())
-                                                        .limit(numberOfOutputWords)
-                                                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                                                (e1, e2) -> e1, LinkedHashMap::new));
-        sortedWordCount.forEach((w, count) -> System.out.println(w +": " + count +" times"));
+    private Map<String, Integer> printMostFrequentWords(final Map<String, Integer> wordCount) {
+        return wordCount.entrySet().stream()
+                        .sorted(Map.Entry.<String,Integer>comparingByValue().reversed())
+                        .limit(numberOfOutputWords)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                                (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     public void mostFrequentWords(){
@@ -51,7 +53,7 @@ public class ThreadsController {
     }
 
     public void threadCompleted(final int threadTotWords, GlobalMap map){
-        this.threadsDone+=1;
+        this.threadsDone += 1;
         this.totWords += threadTotWords;
         if (threadsDone == nThreads){
             System.out.println("All pdfs analysed");
@@ -61,7 +63,6 @@ public class ThreadsController {
     }
 
     public void update(GlobalMap map){
-        this.printMostFrequentWords(map.getMap());
+        view.update(printMostFrequentWords(map.getMap()));
     }
-
 }
