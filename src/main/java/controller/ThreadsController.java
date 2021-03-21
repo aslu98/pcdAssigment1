@@ -3,7 +3,7 @@ package controller;
 import model.GlobalMap;
 import model.PDFDocumentReader;
 import model.WordCounter;
-import model.WordsExtractor;
+import model.SyncWordsExtractor;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +13,12 @@ import java.util.stream.Collectors;
 
 public class ThreadsController {
 
-    private final int ADDITIONAL_THREADS = 1;
+    private final int NUMBER_OF_PAGES_EACH_SECTION = 20;
+    private final int ADDITIONAL_THREADS = 3;
     private final int nThreads;
     private final List<String> wordsToIgnore;
     private final int numberOfOutputWords;
-    private final WordsExtractor wordsExtractor;
+    private final SyncWordsExtractor wordsExtractor;
     private int totWords = 0;
     private int threadsDone = 0;
 
@@ -25,7 +26,7 @@ public class ThreadsController {
         this.numberOfOutputWords = wordsNumber;
         this.wordsToIgnore = Files.readAllLines(new File(toIgnorePath).toPath());
         File[] pdfFiles = new File(directoryPath).listFiles((dir, name) -> name.endsWith(".pdf"));
-        this.wordsExtractor = new WordsExtractor(Arrays.stream(pdfFiles).map(f -> new PDFDocumentReader(f, this.wordsToIgnore)).collect(Collectors.toList()));
+        this.wordsExtractor = new SyncWordsExtractor(Arrays.stream(pdfFiles).map(f -> new PDFDocumentReader(f, this.wordsToIgnore)).collect(Collectors.toList()), NUMBER_OF_PAGES_EACH_SECTION);
         this.nThreads = Math.min(Runtime.getRuntime().availableProcessors() + ADDITIONAL_THREADS, pdfFiles.length);
     }
 

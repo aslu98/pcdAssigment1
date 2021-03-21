@@ -16,7 +16,6 @@ import static java.lang.Math.min;
 
 public class PDFDocumentReader {
 
-    private final int NUMBER_OF_PAGES_EACH_READ = 10;
     private PDDocument toRead;
     private String title;
     private final List<String> wordsToIgnore;
@@ -49,38 +48,24 @@ public class PDFDocumentReader {
         return this.title;
     }
 
-    public Optional<List<String>> extractWords() {
+    public Optional<List<String>> extractWords(final int pagesEachSection) {
         try {
             PDFTextStripper stripper = new PDFTextStripper();
             if (actualPage <= toRead.getNumberOfPages()) {
                 stripper.setStartPage(actualPage);
-                actualPage = min(toRead.getNumberOfPages(), actualPage + NUMBER_OF_PAGES_EACH_READ);
+                actualPage = min(toRead.getNumberOfPages(), actualPage + pagesEachSection);
                 stripper.setEndPage(actualPage);
                 actualPage += 1;
-                return getWords(stripper);
+                String text = (stripper.getText(toRead)).toLowerCase();
+                List<String> words = new ArrayList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
+                for (String toIgnore : wordsToIgnore) {
+                    words.removeIf(word -> word.equals(toIgnore));
+                }
+                return Optional.of(words);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return Optional.empty();
-    }
-
-    public Optional<List<String>> extractAllWords() {
-        try {
-            PDFTextStripper stripper = new PDFTextStripper();
-            return getWords(stripper);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
-    }
-
-    private Optional<List<String>> getWords(PDFTextStripper stripper) throws IOException {
-        String text = (stripper.getText(toRead)).toLowerCase();
-        List<String> words = new ArrayList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
-        for (String toIgnore : wordsToIgnore) {
-            words.removeIf(word -> word.equals(toIgnore));
-        }
-        return Optional.of(words);
     }
 }

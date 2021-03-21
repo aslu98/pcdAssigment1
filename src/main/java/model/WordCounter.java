@@ -2,20 +2,17 @@ package model;
 
 import controller.ThreadsController;
 
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
 public class WordCounter extends Thread {
 
-	private final int UPDATE_EACH = 10000;
 	private final GlobalMap map;
 	private final ThreadsController controller;
-	private final WordsExtractor wordsExtractor;
+	private final SyncWordsExtractor wordsExtractor;
 	private int totWords = 0;
-	private int count = 0;
 
-	public WordCounter(final WordsExtractor wordsExtractor, final int index, final ThreadsController controller){
+	public WordCounter(final SyncWordsExtractor wordsExtractor, final int index, final ThreadsController controller){
 		super("wordCounter " + index);
 		this.map = new GlobalMap();
 		this.wordsExtractor = wordsExtractor;
@@ -30,13 +27,9 @@ public class WordCounter extends Thread {
 			log("new words: " + pdfWords.size());
 			for (String w : pdfWords) {
 				map.computeWord(w);
-				count++;
-				if (count % UPDATE_EACH == 0) {
-					log("sends update");
-					controller.update(map);
-				}
 			}
 			totWords += pdfWords.size();
+			controller.update(map);
 			pdfWordsOpt = wordsExtractor.getWords();
 		}
 		log("after counting");
