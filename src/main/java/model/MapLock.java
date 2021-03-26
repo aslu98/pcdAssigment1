@@ -10,12 +10,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MapLock {
 
-	private List<String> permissionGiven;
-	private List<String> created;
-	private List<String> updating;
-	private Lock mutex;
-	private Map<String, Condition> isAvailCreate;
-	private Map<String, Condition> isAvailUpdate;
+	private final List<String> permissionGiven;
+	private final List<String> created;
+	private final List<String> updating;
+	private final Lock mutex;
+	private final Map<String, Condition> isAvailCreate;
+	private final Map<String, Condition> isAvailUpdate;
 
 	public MapLock(){
 		this.permissionGiven = new LinkedList<>();

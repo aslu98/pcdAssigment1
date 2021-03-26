@@ -20,7 +20,7 @@ public class SyncWordsExtractor {
 
 	public synchronized Optional<List<String>> getWords(){
 		if (actualIndex < documentReaders.size()) {
-			var wordsOpt = documentReaders.get(actualIndex).extractWords(pagesEachSection);
+			Optional<List<String>> wordsOpt = documentReaders.get(actualIndex).extractWords(pagesEachSection);
 			if (wordsOpt.isPresent()) {
 				return wordsOpt;
 			} else {

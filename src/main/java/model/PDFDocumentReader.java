@@ -16,47 +16,44 @@ import static java.lang.Math.min;
 
 public class PDFDocumentReader {
 
-    private PDDocument toRead;
-    private String title;
+    private final File toReadFile;
     private final List<String> wordsToIgnore;
+    private String title;
+    private Optional<PDDocument> toRead;
     private int actualPage = 1;
 
     public PDFDocumentReader(final File toReadFile, final List<String> wordsToIgnore) {
-        try {
-            this.loadDocument(toReadFile);
-        } catch( IOException e) {
-            e.printStackTrace();
-        }
-        this.wordsToIgnore = wordsToIgnore;
+       this.toReadFile = toReadFile;
+       this.wordsToIgnore = wordsToIgnore;
+       this.toRead = Optional.empty();
     }
 
     private void loadDocument(final File file) throws IOException {
         try {
-            this.toRead = PDDocument.load(file);
-            AccessPermission ap = this.toRead.getCurrentAccessPermission();
+            this.toRead = Optional.of(PDDocument.load(file));
+            AccessPermission ap = this.toRead.get().getCurrentAccessPermission();
             if (!ap.canExtractContent()) {
                 throw new IOException("You do not have permission to extract text");
             }
             this.title = file.getName();
             System.out.println("Loaded " + title);
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public String getTitle(){
-        return this.title;
-    }
-
-    public Optional<List<String>> extractWords(final int pagesEachSection) {
+    public Optional<List<String>> extractWords(final int pagesEachSection){
         try {
+            if (toRead.isEmpty()){
+                this.loadDocument(toReadFile);
+            }
             PDFTextStripper stripper = new PDFTextStripper();
-            if (actualPage <= toRead.getNumberOfPages()) {
+            if (actualPage <= toRead.get().getNumberOfPages()) {
                 stripper.setStartPage(actualPage);
-                actualPage = min(toRead.getNumberOfPages(), actualPage + pagesEachSection);
+                actualPage = min(toRead.get().getNumberOfPages(), actualPage + pagesEachSection);
                 stripper.setEndPage(actualPage);
                 actualPage += 1;
-                String text = (stripper.getText(toRead)).toLowerCase();
+                String text = (stripper.getText(toRead.get())).toLowerCase();
                 List<String> words = new ArrayList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
                 for (String toIgnore : wordsToIgnore) {
                     words.removeIf(word -> word.equals(toIgnore));
@@ -66,6 +63,15 @@ public class PDFDocumentReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.closeDocument();
         return Optional.empty();
+    }
+
+    private void closeDocument(){
+        try {
+            this.toRead.get().close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }

@@ -17,7 +17,7 @@ public class GlobalMap {
 		}
 
 		mapLock.request_update(w);
-		updateCount(w);
+		this.updateCount(w);
 		mapLock.release_update(w);
 	}
 
