@@ -12,6 +12,6 @@ public class CommandLineMain {
         Model m = new Model();
         m.addObserver(new CommandLineView());
         m.initialize();
-        m.mostFrequentWords(f, d, n);
+        m.mostFrequentWords(f, d, n, false);
     }
 }

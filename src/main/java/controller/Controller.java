@@ -18,7 +18,7 @@ public class Controller {
 				try {
 					System.out.println("[Controller] Processing start event...");
 					model.initialize();
-					model.mostFrequentWords(toIgnorePath, directoryPath, wordsNumber);
+					model.mostFrequentWords(toIgnorePath, directoryPath, wordsNumber, false);
 					agent.start();
 					System.out.println("[Controller] Processing start event done.");
 				} catch (Exception ex){

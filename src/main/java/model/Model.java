@@ -7,10 +7,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Model {
 
-    private final int NUMBER_OF_PAGES_EACH_SECTION = 15;
+    private final int NUMBER_OF_PAGES_EACH_SECTION = 50;
     private final int ADDITIONAL_THREADS = 2;
     private int nThreads;
     private int numberOfOutputWords;
@@ -29,14 +30,6 @@ public class Model {
         this.observers = new LinkedList<>();
     }
 
-    public void updateMostFrequentWords(final Map<String, Integer> wordCount) {
-        this.sortedWordCount = wordCount.entrySet().stream()
-                                .sorted(Map.Entry.<String,Integer>comparingByValue().reversed())
-                                .limit(numberOfOutputWords)
-                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                        (e1, e2) -> e1, LinkedHashMap::new));
-    }
-
     public void initialize(){
         this.totWords = 0;
         this.threadsDone = 0;
@@ -48,7 +41,7 @@ public class Model {
         this.nThreads = Runtime.getRuntime().availableProcessors() + ADDITIONAL_THREADS;
     }
 
-    public void mostFrequentWords(final String toIgnorePath, final String directoryPath, final int wordsNumber){
+    public void mostFrequentWords(final String toIgnorePath, final String directoryPath, final int wordsNumber, final boolean sequential){
         try {
             this.wordsToIgnore = Files.readAllLines(new File(toIgnorePath).toPath());
         } catch (IOException e) {
@@ -59,7 +52,11 @@ public class Model {
         this.numberOfOutputWords = wordsNumber;
         System.out.println("[Model]" + "total readers " + wordsExtractor.size());
         this.nThreads = Math.min(pdfFiles.length, nThreads);
-        this.startThreads();
+        if (sequential){
+            this.singleThread();
+        } else {
+            this.startThreads();
+        }
     }
 
     private void startThreads(){
@@ -70,6 +67,15 @@ public class Model {
             threads.add(thread);
             thread.start();
         }
+    }
+
+    private void singleThread(){
+        this.stopped = false;
+        this.completed = false;
+        this.nThreads = 1;
+        WordCounter thread = new WordCounter(this.wordsExtractor, 0, this);
+        threads.add(thread);
+        thread.start();
     }
 
     public void stopThreads(){
@@ -96,9 +102,15 @@ public class Model {
         }
     }
 
-    public void notify(final int nWords, final GlobalMap map){
+    public synchronized void update (final int nWords, final GlobalMap map){
         this.totWords += nWords;
-        updateMostFrequentWords(map.getMap());
+        this.sortedWordCount =
+                Stream.concat(sortedWordCount.entrySet().stream(), map.getMap().entrySet().stream())
+                .collect(Collectors.groupingBy(Map.Entry::getKey,
+                        Collectors.summingInt(Map.Entry::getValue))).entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (x,y)-> {throw new AssertionError();}, LinkedHashMap::new));
         this.notifyObservers();
     }
 
@@ -120,11 +132,14 @@ public class Model {
         return this.stopped;
     }
 
-    public int getTotWords(){
+    public synchronized int getTotWords(){
         return this.totWords;
     }
 
-    public Map<String, Integer> getSortedWordCount(){
-        return Collections.unmodifiableMap(this.sortedWordCount);
+    public synchronized Map<String, Integer> getSortedWordCount(){
+        return this.sortedWordCount.entrySet().stream()
+                        .limit(numberOfOutputWords)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                                (e1, e2) -> e1, LinkedHashMap::new));
     }
 }

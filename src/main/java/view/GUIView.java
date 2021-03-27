@@ -77,6 +77,7 @@ public class GUIView extends JFrame implements ModelObserver {
         directory = new JFilePicker("Directory: ", "Browse", new File(d));
         directory.getFileChooser().setCurrentDirectory(new File(d));
         directory.getFileChooser().setSelectedFile(new File(d));
+        directory.setTextField(d);
         directory.getFileChooser().setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         directory.setMode(JFilePicker.MODE_OPEN);
         firstColumnPanel.add(directory);
@@ -89,6 +90,7 @@ public class GUIView extends JFrame implements ModelObserver {
         file = new JFilePicker("File: ", "Browse", new File(f));
         file.getFileChooser().setCurrentDirectory(new File(f));
         file.getFileChooser().setSelectedFile(new File(f));
+        file.setTextField(f);
         file.setMode(JFilePicker.MODE_OPEN);
         filePanel.add(file);
         firstColumnPanel.add(filePanel);
@@ -108,6 +110,8 @@ public class GUIView extends JFrame implements ModelObserver {
         startBtn.addActionListener(e -> {
             startBtn.setEnabled(false);
             stopBtn.setEnabled(true);
+            System.out.println(file.getSelectedFilePath());
+            System.out.println(directory.getSelectedFilePath());
             controller.start(
                     (file.getSelectedFilePath().isEmpty()) ? f : file.getSelectedFilePath(),
                     (directory.getSelectedFilePath().isEmpty()) ? d : directory.getSelectedFilePath(),

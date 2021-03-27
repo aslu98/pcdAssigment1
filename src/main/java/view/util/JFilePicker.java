@@ -79,4 +79,8 @@ public class JFilePicker extends JPanel {
     public JFileChooser getFileChooser() {
         return this.fileChooser;
     }
+
+    public void setTextField(final String text){
+        this.textField.setText(text);
+    }
 }

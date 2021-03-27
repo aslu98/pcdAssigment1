@@ -10,6 +10,7 @@ public class CommandLineView implements ModelObserver {
         if (model.isCompleted()){
             System.out.println("All pdfs analysed");
         }
+        System.out.println(model.getTotWords() + " words analysed");
         model.getSortedWordCount().forEach((w, count) -> System.out.println(w +": " + count +" times"));
     }
 }
