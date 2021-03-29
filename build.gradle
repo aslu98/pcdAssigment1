@@ -24,7 +24,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:28.2-jre'
 
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.1'
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.22'
 
     compile "org.bouncycastle:bcprov-jdk15:1.44"
     compile "org.bouncycastle:bcmail-jdk15:1.44"

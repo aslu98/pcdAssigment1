@@ -5,15 +5,16 @@ import java.util.Optional;
 
 public class WordCounter extends Thread {
 
-	private GlobalMap map;
+	private final GlobalMap map;
 	private final Model model;
 	private final SyncWordsExtractor wordsExtractor;
 	private volatile boolean running = true;
 
-	public WordCounter(final SyncWordsExtractor wordsExtractor, final int index, final Model model){
+	public WordCounter(final SyncWordsExtractor wordsExtractor, final int index, final Model model, final GlobalMap map){
 		super("wordCounter " + index);
 		this.wordsExtractor = wordsExtractor;
 		this.model = model;
+		this.map = map;
 	}
 
 	public void terminate() {
@@ -23,14 +24,19 @@ public class WordCounter extends Thread {
 	public void run(){
 		log("before counting");
 		Optional<List<String>> pdfWordsOpt;
-		while (running && (pdfWordsOpt = wordsExtractor.getWords()).isPresent()){
-			this.map = new GlobalMap();
-			List<String> pdfWords = pdfWordsOpt.get();
-			log("new words: " + pdfWords.size());
-			for (String w : pdfWords) {
-				map.computeWord(w);
+		while (running){
+			pdfWordsOpt = wordsExtractor.getWords();
+			if (pdfWordsOpt.isPresent()){
+				List<String> pdfWords = pdfWordsOpt.get();
+				log("new words: " + pdfWords.size());
+				for (String w : pdfWords) {
+					map.computeWord(w);
+				}
+				model.update(pdfWords.size());
+				log("sent update");
+			} else {
+				break;
 			}
-			model.update(pdfWords.size(), map);
 		}
 
 		if (running){

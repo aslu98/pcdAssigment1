@@ -61,6 +61,11 @@ public class MapLock {
 	public void request_update(String w) {
 		try {
 			mutex.lock();
+			while (!created.contains(w)){
+				try {
+					isAvailCreate.get(w).await();
+				} catch (InterruptedException e){}
+			}
 			while (updating.contains(w)) {
 				try {
 					isAvailUpdate.get(w).await();

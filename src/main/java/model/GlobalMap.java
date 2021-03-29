@@ -5,8 +5,16 @@ import java.util.stream.Collectors;
 
 public class GlobalMap {
 
-	private Map<String, Integer> wordCount = new LinkedHashMap<>();
-	private MapLock mapLock = new MapLock();
+	private final Map<String, Integer> wordCount;
+	private final Map<String, Integer> result;
+	private final MapLock mapLock;
+	List<Map.Entry<String, Integer>> entryList;
+
+	public  GlobalMap (){
+		this.wordCount = new HashMap<>();
+		this.result = new LinkedHashMap<>();
+		this.mapLock = new MapLock();
+	}
 
 	public void computeWord(final String w){
 		if (!wordCount.containsKey(w)){
@@ -21,8 +29,13 @@ public class GlobalMap {
 		mapLock.release_update(w);
 	}
 
-	public Map<String, Integer> getMap() {
-		return this.wordCount;
+	public Map<String, Integer> getSortedMap() {
+		entryList = new LinkedList<>(wordCount.entrySet());
+		entryList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+		for (Map.Entry<String, Integer> entry : entryList) {
+			result.put(entry.getKey(), entry.getValue());
+		}
+		return result;
 	}
 }
 

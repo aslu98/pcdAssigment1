@@ -7,11 +7,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Model {
 
-    private final int NUMBER_OF_PAGES_EACH_SECTION = 50;
+    private final int NUMBER_OF_PAGES_EACH_SECTION = 10;
     private final int ADDITIONAL_THREADS = 2;
     private int nThreads;
     private int numberOfOutputWords;
@@ -20,6 +19,7 @@ public class Model {
     private Map<String, Integer> sortedWordCount;
     private List<WordCounter> threads;
     private List<String> wordsToIgnore = new LinkedList<>();
+    private GlobalMap map;
     private int totWords;
     private int threadsDone;
     private int threadsStopped;
@@ -38,6 +38,7 @@ public class Model {
         this.stopped = false;
         this.threads = new LinkedList<>();
         this.sortedWordCount = new HashMap<>();
+        this.map = new GlobalMap();
         this.nThreads = Runtime.getRuntime().availableProcessors() + ADDITIONAL_THREADS;
     }
 
@@ -48,7 +49,8 @@ public class Model {
             e.printStackTrace();
         }
         File[] pdfFiles = new File(directoryPath).listFiles((dir, name) -> name.endsWith(".pdf"));
-        this.wordsExtractor = new SyncWordsExtractor(Arrays.stream(pdfFiles).map(f -> new PDFDocumentReader(f, this.wordsToIgnore)).collect(Collectors.toList()), NUMBER_OF_PAGES_EACH_SECTION);
+        List <PDFDocumentReader> readers = new LinkedList<>(Arrays.stream(pdfFiles).map(f -> new PDFDocumentReader(f, this.wordsToIgnore)).collect(Collectors.toList()));
+        this.wordsExtractor = new SyncWordsExtractor(readers, NUMBER_OF_PAGES_EACH_SECTION);
         this.numberOfOutputWords = wordsNumber;
         System.out.println("[Model]" + "total readers " + wordsExtractor.size());
         this.nThreads = Math.min(pdfFiles.length, nThreads);
@@ -63,7 +65,7 @@ public class Model {
         this.stopped = false;
         this.completed = false;
         for (int i = 0; i < nThreads; i++) {
-            WordCounter thread = new WordCounter(this.wordsExtractor, i, this);
+            WordCounter thread = new WordCounter(this.wordsExtractor, i, this, map);
             threads.add(thread);
             thread.start();
         }
@@ -73,7 +75,7 @@ public class Model {
         this.stopped = false;
         this.completed = false;
         this.nThreads = 1;
-        WordCounter thread = new WordCounter(this.wordsExtractor, 0, this);
+        WordCounter thread = new WordCounter(this.wordsExtractor, 0, this, map);
         threads.add(thread);
         thread.start();
     }
@@ -102,15 +104,9 @@ public class Model {
         }
     }
 
-    public synchronized void update (final int nWords, final GlobalMap map){
+    public synchronized void update (final int nWords){
         this.totWords += nWords;
-        this.sortedWordCount =
-                Stream.concat(sortedWordCount.entrySet().stream(), map.getMap().entrySet().stream())
-                .collect(Collectors.groupingBy(Map.Entry::getKey,
-                        Collectors.summingInt(Map.Entry::getValue))).entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (x,y)-> {throw new AssertionError();}, LinkedHashMap::new));
+       this.sortedWordCount = map.getSortedMap();
         this.notifyObservers();
     }
 

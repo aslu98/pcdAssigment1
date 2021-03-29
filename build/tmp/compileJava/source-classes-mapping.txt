@@ -4,30 +4,30 @@ view/util/FileTypeFilter.java
  view.util.FileTypeFilter
 model/GlobalMap.java
  model.GlobalMap
-model/SyncWordsExtractor.java
- model.SyncWordsExtractor
-model/PDFDocumentReader.java
- model.PDFDocumentReader
+controller/Controller.java
+ controller.Controller
+view/ModelObserver.java
+ view.ModelObserver
 util/DefaultInputs.java
  util.DefaultInputs
 view/util/JFilePicker.java
  view.util.JFilePicker
  view.util.JFilePicker$1
-model/WordCounter.java
- model.WordCounter
-view/ModelObserver.java
- view.ModelObserver
-GUIMain.java
- GUIMain
-model/Model.java
- model.Model
-CommandLineMain.java
- CommandLineMain
-controller/Controller.java
- controller.Controller
-view/CommandLineView.java
- view.CommandLineView
-view/GUIView.java
- view.GUIView
 controller/Agent.java
  controller.Agent
+CommandLineMain.java
+ CommandLineMain
+view/GUIView.java
+ view.GUIView
+GUIMain.java
+ GUIMain
+view/CommandLineView.java
+ view.CommandLineView
+model/WordCounter.java
+ model.WordCounter
+model/PDFDocumentReader.java
+ model.PDFDocumentReader
+model/SyncWordsExtractor.java
+ model.SyncWordsExtractor
+model/Model.java
+ model.Model

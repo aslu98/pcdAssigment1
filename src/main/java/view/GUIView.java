@@ -36,7 +36,7 @@ public class GUIView extends JFrame implements ModelObserver {
             SwingUtilities.invokeLater(() -> {
                 AtomicInteger countWords = new AtomicInteger();
                 lbl.setText("<html><br/>");
-                lbl.setText(lbl.getText() + model.getTotWords() + " words analysed <br/>");
+                lbl.setText(lbl.getText() + model.getTotWords() + " words processed <br/>");
                 model.getSortedWordCount().forEach((s, i) -> {
                     if (countWords.get() % 5 == 0){
                         lbl.setText(lbl.getText() + "<br/>");
