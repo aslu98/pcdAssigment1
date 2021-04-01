@@ -27,7 +27,9 @@ public class GlobalMap {
 	}
 
 	public Map<String, Integer> getSortedMap() {
+		mapLock.request_get();
 		entryList = new LinkedList<>(wordCount.entrySet());
+		mapLock.release_get();
 		entryList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
 		for (Map.Entry<String, Integer> entry : entryList) {
 			result.put(entry.getKey(), entry.getValue());

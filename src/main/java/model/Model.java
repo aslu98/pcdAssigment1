@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class Model {
 
     private final int NUMBER_OF_PAGES_EACH_SECTION = 30;
-    private final int ADDITIONAL_THREADS = 20;
+    private final int ADDITIONAL_THREADS = 4;
     private int nThreads;
     private int numberOfOutputWords;
     private SyncWordsExtractor wordsExtractor;

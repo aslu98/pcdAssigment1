@@ -12,27 +12,38 @@ public class MapLock {
 
 	private final List<String> updating;
 	private final Lock mutex;
-	private final Map<String, Condition> isAvailUpdate;
+	private final Map<String, Condition> wordIsAvail;
+	private final Condition canUpdate;
+	private final Condition canGet;
+	private boolean getAvailable;
 
 	public MapLock(){
 		this.updating = new LinkedList<>();
 		this.mutex = new ReentrantLock();
-		this.isAvailUpdate = new HashMap<>();
+		this.wordIsAvail = new HashMap<>();
+		this.canGet = mutex.newCondition();
+		this.canUpdate = mutex.newCondition();
+		this.getAvailable = false;
 	}
 
 	private void addConditionVariabile(String w){
-		if (!isAvailUpdate.containsKey(w)){
-			this.isAvailUpdate.put(w, mutex.newCondition());
+		if (!wordIsAvail.containsKey(w)){
+			this.wordIsAvail.put(w, mutex.newCondition());
 		}
 	}
 
 	public void request_update(String w) {
 		try {
 			mutex.lock();
+			while (getAvailable){
+				try {
+					canUpdate.await();
+				} catch (InterruptedException e){}
+			}
 			addConditionVariabile(w);
 			while (updating.contains(w)) {
 				try {
-					isAvailUpdate.get(w).await();
+					wordIsAvail.get(w).await();
 				} catch (InterruptedException e){}
 			}
 			updating.add(w);
@@ -44,9 +55,40 @@ public class MapLock {
 	public void release_update(String w) {
 		try {
 			mutex.lock();
+			while (getAvailable){
+				try {
+					canUpdate.await();
+				} catch (InterruptedException e){}
+			}
 			updating.remove(w);
+			if (updating.isEmpty()){
+				canGet.signalAll();
+			}
 			addConditionVariabile(w);
-			isAvailUpdate.get(w).signalAll();
+			wordIsAvail.get(w).signalAll();
+		} finally {
+			mutex.unlock();
+		}
+	}
+
+	public void request_get(){
+		try {
+			mutex.lock();
+			while (!updating.isEmpty()){
+				try {
+					canGet.await();
+				} catch (InterruptedException e){}
+			}
+		} finally {
+			mutex.unlock();
+		}
+	}
+
+	public void release_get(){
+		try {
+			mutex.lock();
+			getAvailable = false;
+			canUpdate.signalAll();
 		} finally {
 			mutex.unlock();
 		}
