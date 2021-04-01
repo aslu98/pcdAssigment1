@@ -52,7 +52,7 @@ public class PDFDocumentReader {
                 this.stripper.setEndPage(actualPage);
                 actualPage += 1;
                 String text = (stripper.getText(toRead.get())).toLowerCase();
-                List<String> words = new LinkedList<>(Arrays.stream(text.split("\\s+")).collect(Collectors.toList()));
+                List<String> words = new LinkedList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
                 for (String toIgnore : wordsToIgnore) {
                     words.removeIf(word -> word.equals(toIgnore));
                 }

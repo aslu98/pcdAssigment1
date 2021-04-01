@@ -8,9 +8,9 @@ public class GlobalMap {
 	private final Map<String, Integer> wordCount;
 	private final Map<String, Integer> result;
 	private final MapLock mapLock;
-	List<Map.Entry<String, Integer>> entryList;
+	private List<Map.Entry<String, Integer>> entryList;
 
-	public  GlobalMap (){
+	public GlobalMap (){
 		this.wordCount = new HashMap<>();
 		this.result = new LinkedHashMap<>();
 		this.mapLock = new MapLock();
@@ -18,10 +18,7 @@ public class GlobalMap {
 
 	public void computeWord(final String w){
 		if (!wordCount.containsKey(w)){
-			if (mapLock.request_add(w)){
-				wordCount.put(w, 0);
-				mapLock.release_add(w);
-			}
+			wordCount.put(w, 0);
 		}
 
 		mapLock.request_update(w);
