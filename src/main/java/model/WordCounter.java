@@ -1,21 +1,21 @@
 package model;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class WordCounter extends Thread {
 
 	private final GlobalMap map;
 	private final Model model;
 	private final SyncWordsExtractor wordsExtractor;
+	private final List<String> wordsToIgnore;
 	private volatile boolean running = true;
 
-	public WordCounter(final SyncWordsExtractor wordsExtractor, final GlobalMap map, final int index, final Model model){
+	public WordCounter(final SyncWordsExtractor wordsExtractor, final List<String> wordsToIgnore, final GlobalMap map, final int index, final Model model){
 		super("wordCounter " + index);
 		this.wordsExtractor = wordsExtractor;
 		this.model = model;
 		this.map = map;
+		this.wordsToIgnore = wordsToIgnore;
 	}
 
 	public void terminate() {
@@ -30,11 +30,17 @@ public class WordCounter extends Thread {
 			pdfWordsOpt = wordsExtractor.getWords();
 			if (pdfWordsOpt.isPresent() && (pdfWords = pdfWordsOpt.get()).size() > 0){
 				log("new words: " + pdfWords.size());
-				for (String w : pdfWords) {
-					map.computeWord(w);
+				for (String toIgnore : wordsToIgnore) {
+					pdfWords.removeIf(word -> word.equals(toIgnore));
 				}
-				model.update(pdfWords.size(), map.getSortedMap());
-				log("sent update");
+				log("ok words: " + pdfWords.size());
+				if (pdfWordsOpt.get().size() > 0) {
+					for (String w : pdfWords) {
+						map.computeWord(w);
+					}
+					model.update(pdfWords.size(), map.getSortedMap());
+					log("sent update");
+				}
 			} else {
 				break;
 			}

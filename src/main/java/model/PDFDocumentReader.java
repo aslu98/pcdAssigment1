@@ -14,15 +14,13 @@ import static java.lang.Math.min;
 public class PDFDocumentReader {
 
     private final File toReadFile;
-    private final List<String> wordsToIgnore;
     private PDFTextStripper stripper;
     private String title;
     private Optional<PDDocument> toRead;
     private int actualPage = 1;
 
-    public PDFDocumentReader(final File toReadFile, final List<String> wordsToIgnore) {
+    public PDFDocumentReader(final File toReadFile) {
        this.toReadFile = toReadFile;
-       this.wordsToIgnore = wordsToIgnore;
        this.toRead = Optional.empty();
     }
 
@@ -53,10 +51,7 @@ public class PDFDocumentReader {
                 actualPage += 1;
                 String text = (stripper.getText(toRead.get())).toLowerCase();
                 List<String> words = new LinkedList<>(Arrays.stream(text.split("\\W+")).collect(Collectors.toList()));
-                for (String toIgnore : wordsToIgnore) {
-                    words.removeIf(word -> word.equals(toIgnore));
-                }
-                return Optional.of(Collections.unmodifiableList(new LinkedList<>(words)));
+                return Optional.of(words);
             }
         } catch (IOException e) {
             System.out.println(this.title);

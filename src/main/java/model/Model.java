@@ -49,7 +49,7 @@ public class Model {
             e.printStackTrace();
         }
         File[] pdfFiles = new File(directoryPath).listFiles((dir, name) -> name.endsWith(".pdf"));
-        List <PDFDocumentReader> readers = new LinkedList<>(Arrays.stream(pdfFiles).map(f -> new PDFDocumentReader(f, this.wordsToIgnore)).collect(Collectors.toList()));
+        List <PDFDocumentReader> readers = new LinkedList<>(Arrays.stream(pdfFiles).map(f -> new PDFDocumentReader(f)).collect(Collectors.toList()));
         this.wordsExtractor = new SyncWordsExtractor(readers, NUMBER_OF_PAGES_EACH_SECTION);
         this.numberOfOutputWords = wordsNumber;
         System.out.println("[Model]" + "total readers " + wordsExtractor.size());
@@ -65,7 +65,7 @@ public class Model {
         this.stopped = false;
         this.completed = false;
         for (int i = 0; i < nThreads; i++) {
-            WordCounter thread = new WordCounter(this.wordsExtractor, map, i, this);
+            WordCounter thread = new WordCounter(this.wordsExtractor, this.wordsToIgnore, map, i, this);
             threads.add(thread);
             thread.start();
         }
@@ -75,7 +75,7 @@ public class Model {
         this.stopped = false;
         this.completed = false;
         this.nThreads = 1;
-        WordCounter thread = new WordCounter(this.wordsExtractor, map, 0, this);
+        WordCounter thread = new WordCounter(this.wordsExtractor, this.wordsToIgnore, map, 0, this);
         threads.add(thread);
         thread.start();
     }
