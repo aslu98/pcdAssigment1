@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class Model {
 
     private final int NUMBER_OF_PAGES_EACH_SECTION = 60;
-    private final int ADDITIONAL_THREADS = 3;
+    private final int ADDITIONAL_THREADS = 0;
     private int nThreads;
     private int numberOfOutputWords;
     private SyncWordsExtractor wordsExtractor;
@@ -39,7 +39,7 @@ public class Model {
         this.threads = new LinkedList<>();
         this.wordCount = new HashMap<>();
         this.map = new GlobalMap();
-        this.nThreads = Runtime.getRuntime().availableProcessors() + ADDITIONAL_THREADS;
+        this.nThreads = Runtime.getRuntime().availableProcessors() + 1 + ADDITIONAL_THREADS;
     }
 
     public void mostFrequentWords(final String toIgnorePath, final String directoryPath, final int wordsNumber, final boolean sequential){

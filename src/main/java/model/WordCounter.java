@@ -25,10 +25,10 @@ public class WordCounter extends Thread {
 	public void run(){
 		log("before counting");
 		Optional<List<String>> pdfWordsOpt;
+		List<String> pdfWords;
 		while (running){
 			pdfWordsOpt = wordsExtractor.getWords();
-			if (pdfWordsOpt.isPresent()){
-				List<String> pdfWords = pdfWordsOpt.get();
+			if (pdfWordsOpt.isPresent() && (pdfWords = pdfWordsOpt.get()).size() > 0){
 				log("new words: " + pdfWords.size());
 				for (String w : pdfWords) {
 					map.computeWord(w);

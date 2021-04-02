@@ -17,8 +17,8 @@ model/WordCounter.java
  model.WordCounter
 view/ModelObserver.java
  view.ModelObserver
-controller/Agent.java
- controller.Agent
+GUIMain.java
+ GUIMain
 model/Model.java
  model.Model
 CommandLineMain.java
@@ -27,7 +27,7 @@ controller/Controller.java
  controller.Controller
 view/CommandLineView.java
  view.CommandLineView
-GUIMain.java
- GUIMain
 view/GUIView.java
  view.GUIView
+controller/Agent.java
+ controller.Agent
