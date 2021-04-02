@@ -8,6 +8,9 @@ import view.util.JFilePicker;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GUIView extends JFrame implements ModelObserver {
@@ -34,16 +37,17 @@ public class GUIView extends JFrame implements ModelObserver {
         try {
             System.out.println("[View] model updated => updating the view");
             SwingUtilities.invokeLater(() -> {
-                AtomicInteger countWords = new AtomicInteger();
                 lbl.setText("<html><br/>");
                 lbl.setText(lbl.getText() + model.getTotWords() + " words processed <br/>");
-                model.getWordCount().forEach((s, i) -> {
-                    if (countWords.get() % 5 == 0){
+                Map<String, Integer> map = model.getWordCount();
+                List<String> keyList = new ArrayList<>(map.keySet());
+                for(int i = 0; i < map.size(); i++) {
+                    String key = keyList.get(i);
+                    if (i % 5 == 0){
                         lbl.setText(lbl.getText() + "<br/>");
                     }
-                    lbl.setText(lbl.getText() +  s + " (" + i + " times) &nbsp; &nbsp;");
-                    countWords.getAndIncrement();
-                });
+                    lbl.setText(lbl.getText() + key + " (" + map.get(key) + " times) &nbsp; &nbsp;");
+                }
                 if (model.isCompleted()) {
                     lbl.setText(lbl.getText() + "<br/><br/>COUNT COMPLETED");
                     startBtn.setEnabled(true);

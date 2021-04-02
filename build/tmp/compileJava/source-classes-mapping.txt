@@ -21,13 +21,13 @@ controller/Agent.java
  controller.Agent
 model/Model.java
  model.Model
-view/GUIView.java
- view.GUIView
-controller/Controller.java
- controller.Controller
-GUIMain.java
- GUIMain
 CommandLineMain.java
  CommandLineMain
+controller/Controller.java
+ controller.Controller
 view/CommandLineView.java
  view.CommandLineView
+GUIMain.java
+ GUIMain
+view/GUIView.java
+ view.GUIView
