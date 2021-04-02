@@ -62,7 +62,7 @@ public class MapLock {
 			}
 			updating.remove(w);
 			if (updating.isEmpty()){
-				canGet.signalAll();
+				canGet.signal();
 			}
 			addConditionVariabile(w);
 			wordIsAvail.get(w).signalAll();
@@ -79,6 +79,7 @@ public class MapLock {
 					canGet.await();
 				} catch (InterruptedException e){}
 			}
+			getAvailable = true;
 		} finally {
 			mutex.unlock();
 		}

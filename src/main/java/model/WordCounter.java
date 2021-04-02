@@ -1,6 +1,7 @@
 package model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class WordCounter extends Thread {
@@ -10,7 +11,7 @@ public class WordCounter extends Thread {
 	private final SyncWordsExtractor wordsExtractor;
 	private volatile boolean running = true;
 
-	public WordCounter(final SyncWordsExtractor wordsExtractor, final int index, final Model model, final GlobalMap map){
+	public WordCounter(final SyncWordsExtractor wordsExtractor, final GlobalMap map, final int index, final Model model){
 		super("wordCounter " + index);
 		this.wordsExtractor = wordsExtractor;
 		this.model = model;
@@ -32,7 +33,7 @@ public class WordCounter extends Thread {
 				for (String w : pdfWords) {
 					map.computeWord(w);
 				}
-				model.update(pdfWords.size());
+				model.update(pdfWords.size(), map.getSortedMap());
 				log("sent update");
 			} else {
 				break;

@@ -56,7 +56,7 @@ public class PDFDocumentReader {
                 for (String toIgnore : wordsToIgnore) {
                     words.removeIf(word -> word.equals(toIgnore));
                 }
-                return Optional.of(words);
+                return Optional.of(Collections.unmodifiableList(new LinkedList<>(words)));
             }
         } catch (IOException e) {
             System.out.println(this.title);

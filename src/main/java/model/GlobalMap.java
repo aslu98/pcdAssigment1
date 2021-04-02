@@ -1,26 +1,21 @@
 package model;
 
+import java.awt.desktop.PreferencesEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class GlobalMap {
 
 	private final Map<String, Integer> wordCount;
-	private final Map<String, Integer> result;
 	private final MapLock mapLock;
-	private List<Map.Entry<String, Integer>> entryList;
 
 	public GlobalMap (){
 		this.wordCount = new HashMap<>();
-		this.result = new LinkedHashMap<>();
 		this.mapLock = new MapLock();
 	}
 
 	public void computeWord(final String w){
-		if (!wordCount.containsKey(w)){
-			wordCount.put(w, 0);
-		}
-
+		wordCount.putIfAbsent(w, 0);
 		mapLock.request_update(w);
 		wordCount.put(w, wordCount.get(w)+1);
 		mapLock.release_update(w);
@@ -28,12 +23,11 @@ public class GlobalMap {
 
 	public Map<String, Integer> getSortedMap() {
 		mapLock.request_get();
-		entryList = new LinkedList<>(wordCount.entrySet());
+		Map<String, Integer> result = wordCount.entrySet().stream()
+				.sorted(Map.Entry.<String,Integer>comparingByValue().reversed())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+						(e1, e2) -> e1, LinkedHashMap::new));
 		mapLock.release_get();
-		entryList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-		for (Map.Entry<String, Integer> entry : entryList) {
-			result.put(entry.getKey(), entry.getValue());
-		}
 		return result;
 	}
 }

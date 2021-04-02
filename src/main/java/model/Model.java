@@ -10,16 +10,16 @@ import java.util.stream.Collectors;
 
 public class Model {
 
-    private final int NUMBER_OF_PAGES_EACH_SECTION = 30;
-    private final int ADDITIONAL_THREADS = 4;
+    private final int NUMBER_OF_PAGES_EACH_SECTION = 50;
+    private final int ADDITIONAL_THREADS = 3;
     private int nThreads;
     private int numberOfOutputWords;
     private SyncWordsExtractor wordsExtractor;
     private List<ModelObserver> observers;
-    private Map<String, Integer> sortedWordCount;
+    private Map<String, Integer> wordCount;
+    private GlobalMap map;
     private List<WordCounter> threads;
     private List<String> wordsToIgnore = new LinkedList<>();
-    private GlobalMap map;
     private int totWords;
     private int threadsDone;
     private int threadsStopped;
@@ -37,7 +37,7 @@ public class Model {
         this.completed = false;
         this.stopped = false;
         this.threads = new LinkedList<>();
-        this.sortedWordCount = new HashMap<>();
+        this.wordCount = new HashMap<>();
         this.map = new GlobalMap();
         this.nThreads = Runtime.getRuntime().availableProcessors() + ADDITIONAL_THREADS;
     }
@@ -65,7 +65,7 @@ public class Model {
         this.stopped = false;
         this.completed = false;
         for (int i = 0; i < nThreads; i++) {
-            WordCounter thread = new WordCounter(this.wordsExtractor, i, this, map);
+            WordCounter thread = new WordCounter(this.wordsExtractor, map, i, this);
             threads.add(thread);
             thread.start();
         }
@@ -75,7 +75,7 @@ public class Model {
         this.stopped = false;
         this.completed = false;
         this.nThreads = 1;
-        WordCounter thread = new WordCounter(this.wordsExtractor, 0, this, map);
+        WordCounter thread = new WordCounter(this.wordsExtractor, map, 0, this);
         threads.add(thread);
         thread.start();
     }
@@ -104,9 +104,9 @@ public class Model {
         }
     }
 
-    public synchronized void update (final int nWords){
+    public synchronized void update (final int nWords, Map<String, Integer> actualMap){
         this.totWords += nWords;
-       this.sortedWordCount = map.getSortedMap();
+        this.wordCount = actualMap;
         this.notifyObservers();
     }
 
@@ -132,8 +132,8 @@ public class Model {
         return this.totWords;
     }
 
-    public synchronized Map<String, Integer> getSortedWordCount(){
-        return this.sortedWordCount.entrySet().stream()
+    public synchronized Map<String, Integer> getWordCount(){
+        return this.wordCount.entrySet().stream()
                         .limit(numberOfOutputWords)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                                 (e1, e2) -> e1, LinkedHashMap::new));

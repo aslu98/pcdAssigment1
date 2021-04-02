@@ -37,7 +37,7 @@ public class GUIView extends JFrame implements ModelObserver {
                 AtomicInteger countWords = new AtomicInteger();
                 lbl.setText("<html><br/>");
                 lbl.setText(lbl.getText() + model.getTotWords() + " words processed <br/>");
-                model.getSortedWordCount().forEach((s, i) -> {
+                model.getWordCount().forEach((s, i) -> {
                     if (countWords.get() % 5 == 0){
                         lbl.setText(lbl.getText() + "<br/>");
                     }
@@ -141,7 +141,7 @@ public class GUIView extends JFrame implements ModelObserver {
         secondColumnPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         secondColumnPanel.setSize(new Dimension(400, 800));
 
-        secondColumnPanel.add(BorderLayout.NORTH, new JLabel("---------------------------- Most Frequent Words ----------------------------"));
+        secondColumnPanel.add(BorderLayout.NORTH, new JLabel("-------------------------------- Most Frequent Words --------------------------------"));
         secondColumnPanel.add(lbl);
         secondColumnPanel.add(Box.createVerticalGlue());
 
