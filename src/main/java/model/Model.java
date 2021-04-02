@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class Model {
 
-    private final int NUMBER_OF_PAGES_EACH_SECTION = 50;
+    private final int NUMBER_OF_PAGES_EACH_SECTION = 70;
     private final int ADDITIONAL_THREADS = 3;
     private int nThreads;
     private int numberOfOutputWords;

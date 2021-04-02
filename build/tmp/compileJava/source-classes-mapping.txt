@@ -11,23 +11,23 @@ model/PDFDocumentReader.java
  model.PDFDocumentReader
 model/MapLock.java
  model.MapLock
-controller/Agent.java
- controller.Agent
-view/ModelObserver.java
- view.ModelObserver
-CommandLineMain.java
- CommandLineMain
-GUIMain.java
- GUIMain
-view/CommandLineView.java
- view.CommandLineView
-controller/Controller.java
- controller.Controller
-view/GUIView.java
- view.GUIView
-model/WordCounter.java
- model.WordCounter
 model/GlobalMap.java
  model.GlobalMap
+model/WordCounter.java
+ model.WordCounter
+view/ModelObserver.java
+ view.ModelObserver
+controller/Agent.java
+ controller.Agent
 model/Model.java
  model.Model
+view/GUIView.java
+ view.GUIView
+controller/Controller.java
+ controller.Controller
+GUIMain.java
+ GUIMain
+CommandLineMain.java
+ CommandLineMain
+view/CommandLineView.java
+ view.CommandLineView
