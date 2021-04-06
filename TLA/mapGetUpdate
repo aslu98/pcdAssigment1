@@ -1,0 +1,39 @@
+--------------------------- MODULE mapGetUpdate ---------------------------
+
+EXTENDS TLC, Integers, Sequences
+CONSTANTS UpdatesToDo
+
+(*--algorithm getUpdate
+variables
+  queue = <<>>;
+  canUpdate = 1;
+  updatesToDo = UpdatesToDo;
+define
+end define;
+
+process wantToUpdate \in { "up1", "up2" } 
+variable item = "";
+begin updating:
+  while updatesToDo > 0 do
+    request:
+        await canUpdate = 1;
+        queue := Append(queue, item);
+    release: 
+        await canUpdate = 1;
+        item := Head(queue);
+        updatesToDo := updatesToDo - 1;
+  end while;
+end process;
+
+process wantToget \in { "get1", "get2" }
+variable item = "none";
+begin Consume:
+  while TRUE do
+    request: 
+        await queue = <<>>;
+        canUpdate := 0;
+    release:
+        canUpdate := 1
+  end while;
+end process;
+end algorithm;*)

@@ -11,11 +11,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GUIView extends JFrame implements ModelObserver {
 
     private final Controller controller;
+    private long startTime;
     private JLabel lbl;
     private JButton startBtn;
 
@@ -50,6 +50,10 @@ public class GUIView extends JFrame implements ModelObserver {
                 }
                 if (model.isCompleted()) {
                     lbl.setText(lbl.getText() + "<br/><br/>COUNT COMPLETED");
+                    long endTime = System.nanoTime();
+                    long timeElapsed = endTime - startTime;
+                    System.out.println("Execution time in nanoseconds  : " + timeElapsed);
+                    System.out.println("Execution time in milliseconds : " + timeElapsed / 1000000);
                     startBtn.setEnabled(true);
                     controller.stop();
                 }
@@ -114,8 +118,7 @@ public class GUIView extends JFrame implements ModelObserver {
         startBtn.addActionListener(e -> {
             startBtn.setEnabled(false);
             stopBtn.setEnabled(true);
-            System.out.println(file.getSelectedFilePath());
-            System.out.println(directory.getSelectedFilePath());
+            startTime = System.nanoTime();
             controller.start(
                     (file.getSelectedFilePath().isEmpty()) ? f : file.getSelectedFilePath(),
                     (directory.getSelectedFilePath().isEmpty()) ? d : directory.getSelectedFilePath(),
