@@ -1,14 +1,15 @@
-package model;
+package jpf.MapLock;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class GlobalMap {
 
 	private final Map<String, Integer> wordCount;
 	private final MapLock mapLock;
 
-	public GlobalMap (){
+	public GlobalMap(){
 		this.wordCount = new HashMap<>();
 		this.mapLock = new MapLock();
 	}
@@ -20,12 +21,9 @@ public class GlobalMap {
 		mapLock.release_update(w);
 	}
 
-	public Map<String, Integer> getSortedMap() {
+	public Map<String, Integer> getMap() {
 		mapLock.request_get();
-		Map<String, Integer> result = wordCount.entrySet().stream()
-				.sorted(Map.Entry.<String,Integer>comparingByValue().reversed())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-						(e1, e2) -> e1, LinkedHashMap::new));
+		Map<String, Integer> result = new LinkedHashMap<>(wordCount);
 		mapLock.release_get();
 		return result;
 	}

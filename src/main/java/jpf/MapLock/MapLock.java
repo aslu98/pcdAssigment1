@@ -1,4 +1,4 @@
-package model;
+package jpf.MapLock;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -61,8 +61,13 @@ public class MapLock {
 	public void release_update(String w) {
 		try {
 			mutex.lock();
-			updating.remove(w);
+			while (getAvailable){
+				try {
+					canUpdate.await();
+				} catch (InterruptedException e){}
+			}
 			addConditionVariabile(w);
+			updating.remove(w);
 			wordIsAvail.get(w).signalAll();
 			if (updating.isEmpty()){
 				canGet.signal();

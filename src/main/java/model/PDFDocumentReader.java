@@ -41,7 +41,7 @@ public class PDFDocumentReader {
 
     public Optional<List<String>> extractWords(final int pagesEachSection){
         try {
-            if (toRead.isEmpty()){
+            if (!toRead.isPresent()){
                 this.loadDocument();
             }
             if (actualPage <= toRead.get().getNumberOfPages()) {

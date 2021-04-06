@@ -95,11 +95,12 @@ public class Model {
         }
     }
 
-    public void threadCompleted(){
+    public synchronized void threadCompleted(){
         this.threadsDone += 1;
         if (threadsDone == nThreads){
             this.completed = true;
             System.out.println("All completed.");
+            this.wordCount = map.getSortedMap();
             this.notifyObservers();
         }
     }
