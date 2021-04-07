@@ -14,9 +14,8 @@ public class GlobalMap {
 	}
 
 	public void computeWord(final String w){
-		wordCount.putIfAbsent(w, 0);
 		mapLock.request_update(w);
-		wordCount.put(w, wordCount.get(w)+1);
+		wordCount.put(w, wordCount.containsKey(w) ? wordCount.get(w) + 1 : 1);
 		mapLock.release_update(w);
 	}
 

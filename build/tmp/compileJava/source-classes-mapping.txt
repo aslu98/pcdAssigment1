@@ -1,34 +1,30 @@
-model/MapLock.java
- model.MapLock
+view/ModelObserver.java
+ view.ModelObserver
 view/util/FileTypeFilter.java
  view.util.FileTypeFilter
 model/GlobalMap.java
  model.GlobalMap
-util/DefaultInputs.java
- util.DefaultInputs
 model/SyncWordsExtractor.java
  model.SyncWordsExtractor
-jpf/MapLock/Main.java
- jpf.MapLock.Main
-view/util/JFilePicker.java
- view.util.JFilePicker
- view.util.JFilePicker$1
-model/PDFDocumentReader.java
- model.PDFDocumentReader
-view/ModelObserver.java
- view.ModelObserver
 controller/Controller.java
  controller.Controller
 view/GUIView.java
  view.GUIView
 controller/Agent.java
  controller.Agent
-jpf/MapLock/WordCounter.java
- jpf.MapLock.WordCounter
+view/util/JFilePicker.java
+ view.util.JFilePicker
+ view.util.JFilePicker$1
+util/DefaultInputs.java
+ util.DefaultInputs
+jpf/MapLock/MapLock.java
+ jpf.MapLock.MapLock
 model/WordCounter.java
  model.WordCounter
-view/CommandLineView.java
- view.CommandLineView
+model/PDFDocumentReader.java
+ model.PDFDocumentReader
+jpf/MapLock/GlobalMap.java
+ jpf.MapLock.GlobalMap
 GUIMain.java
  GUIMain
 jpf/MapLock/Model.java
@@ -37,7 +33,11 @@ model/Model.java
  model.Model
 CommandLineMain.java
  CommandLineMain
-jpf/MapLock/MapLock.java
- jpf.MapLock.MapLock
-jpf/MapLock/GlobalMap.java
- jpf.MapLock.GlobalMap
+model/MapLock.java
+ model.MapLock
+view/CommandLineView.java
+ view.CommandLineView
+jpf/MapLock/Main.java
+ jpf.MapLock.Main
+jpf/MapLock/WordCounter.java
+ jpf.MapLock.WordCounter

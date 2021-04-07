@@ -1,8 +1,5 @@
 package jpf.MapLock;
-
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WordCounter extends Thread {
 
@@ -19,8 +16,8 @@ public class WordCounter extends Thread {
 
 	public void run(){
 		for (String w : pdfWords) {
-			map.computeWord(w);
+			map.computeWord(w, this.getName());
 		}
-	    m.update();
+	   //m.update();
 	}
 }

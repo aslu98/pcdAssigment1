@@ -14,11 +14,10 @@ public class GlobalMap {
 		this.mapLock = new MapLock();
 	}
 
-	public void computeWord(final String w){
-		wordCount.putIfAbsent(w, 0);
-		mapLock.request_update(w);
-		wordCount.put(w, wordCount.get(w)+1);
-		mapLock.release_update(w);
+	public void computeWord(final String w, final String thread){
+		mapLock.request_update(w, thread);
+		wordCount.put(w, wordCount.containsKey(w) ? wordCount.get(w) + 1 : 1);
+		mapLock.release_update(w, thread);
 	}
 
 	public Map<String, Integer> getMap() {

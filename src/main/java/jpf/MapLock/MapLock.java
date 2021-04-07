@@ -12,10 +12,10 @@ public class MapLock {
 
 	private final List<String> updating;
 	private final Lock mutex;
-	private final Map<String, Condition> wordIsAvail;
 	private final Condition canUpdate;
 	private final Condition canGet;
 	private boolean getAvailable;
+	private Map<String, Condition> wordIsAvail;
 
 	public MapLock(){
 		this.updating = new LinkedList<>();
@@ -26,19 +26,13 @@ public class MapLock {
 		this.getAvailable = false;
 	}
 
-	private void addConditionVariabile(String w){
+	private void addConditionVariabile(final String w){
 		if (!wordIsAvail.containsKey(w)){
 			this.wordIsAvail.put(w, mutex.newCondition());
 		}
 	}
 
-	private void removeConditionVariabile(String w){
-		if (wordIsAvail.containsKey(w)){
-			this.wordIsAvail.remove(w);
-		}
-	}
-
-	public void request_update(String w) {
+	public void request_update(final String w, String thread) {
 		try {
 			mutex.lock();
 			while (getAvailable){
@@ -58,17 +52,11 @@ public class MapLock {
 		}
 	}
 
-	public void release_update(String w) {
+	public void release_update(final String w, String thread) {
 		try {
 			mutex.lock();
-			while (getAvailable){
-				try {
-					canUpdate.await();
-				} catch (InterruptedException e){}
-			}
-			addConditionVariabile(w);
 			updating.remove(w);
-			wordIsAvail.get(w).signalAll();
+			wordIsAvail.get(w).signal();
 			if (updating.isEmpty()){
 				canGet.signal();
 			}

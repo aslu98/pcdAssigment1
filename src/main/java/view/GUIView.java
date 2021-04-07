@@ -148,7 +148,7 @@ public class GUIView extends JFrame implements ModelObserver {
         secondColumnPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         secondColumnPanel.setSize(new Dimension(400, 800));
 
-        secondColumnPanel.add(BorderLayout.NORTH, new JLabel("-------------------------------- Most Frequent Words --------------------------------"));
+        secondColumnPanel.add(BorderLayout.NORTH, new JLabel("------------------------------------- Most Frequent Words -------------------------------------"));
         secondColumnPanel.add(lbl);
         secondColumnPanel.add(Box.createVerticalGlue());
 

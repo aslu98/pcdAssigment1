@@ -8,6 +8,7 @@ public class WordCounter extends Thread {
 	private final Model model;
 	private final SyncWordsExtractor wordsExtractor;
 	private final List<String> wordsToIgnore;
+	private final int index;
 	private volatile boolean running = true;
 
 	public WordCounter(final SyncWordsExtractor wordsExtractor, final List<String> wordsToIgnore, final GlobalMap map, final int index, final Model model){
@@ -16,6 +17,7 @@ public class WordCounter extends Thread {
 		this.model = model;
 		this.map = map;
 		this.wordsToIgnore = wordsToIgnore;
+		this.index = index;
 	}
 
 	public void terminate() {

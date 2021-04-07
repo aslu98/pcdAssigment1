@@ -66,7 +66,7 @@ public class Model {
         this.completed = false;
         for (int i = 0; i < nThreads; i++) {
             WordCounter thread = new WordCounter(this.wordsExtractor, this.wordsToIgnore, map, i, this);
-            threads.add(thread);
+            threads.add(i, thread);
             thread.start();
         }
     }
@@ -86,7 +86,7 @@ public class Model {
         }
     }
 
-    public void threadStopped(){
+    public synchronized void threadStopped(){
         this.threadsStopped += 1;
         if (threadsStopped == nThreads){
             this.stopped = true;
@@ -105,7 +105,7 @@ public class Model {
         }
     }
 
-    public synchronized void update (final int nWords, Map<String, Integer> actualMap){
+    public synchronized void update (final int nWords, final Map<String, Integer> actualMap){
         this.totWords += nWords;
         this.wordCount = actualMap;
         this.notifyObservers();
